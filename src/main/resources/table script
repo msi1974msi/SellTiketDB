@@ -1,0 +1,35 @@
+-- auto-generated definition
+create table opera
+(
+    id          bigserial not null,
+    status      integer,
+    version     bigint,
+    operadate   date,
+    label       varchar(254),
+    description varchar(1000),
+    category    varchar(50)
+);
+
+alter table opera
+    owner to postgres;
+
+create unique index opera_id_uindex
+    on opera (id);
+
+
+-- auto-generated definition
+create table ticket
+(
+    id      bigserial not null,
+    opera   bigint    not null,
+    status  integer,
+    version integer,
+    row     integer,
+    place   integer
+);
+
+alter table ticket
+    owner to postgres;
+
+create unique index ticket_id_uindex
+    on ticket (id);
