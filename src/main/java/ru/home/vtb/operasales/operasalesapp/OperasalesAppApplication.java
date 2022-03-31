@@ -79,6 +79,9 @@ public class OperasalesAppApplication {
 //       }
 //
 //
+
+//2
+
         // заведём новый релиз
         System.out.println("\nзаведём новый релиз Test delete  01.05.2022");
         opera = ctx.getBean(OperaController.class).getOpera("Test delete","01.05.2022");

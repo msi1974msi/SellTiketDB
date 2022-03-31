@@ -2,11 +2,17 @@ package ru.home.vtb.operasales.operasalesapp.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.home.vtb.operasales.operasalesapp.repository.entities.OperaEntity;
 import ru.home.vtb.operasales.operasalesapp.repository.entities.TicketEntity;
 import ru.home.vtb.operasales.operasalesapp.repository.interfaces.OperaRepository;
 import ru.home.vtb.operasales.operasalesapp.repository.interfaces.TicketRepository;
 
+import java.io.EOFException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -23,6 +29,7 @@ public class TicketService {
         this.ticketRepository = ticketRepository;
     }
 
+    // выполняется в транзакции верхнего уровня (под релизом)
     public static void initTickets(OperaEntity opera) {
         for (int i = 1; i < 11; i++) {
             for (int j = 1; j < 11; j++){
@@ -32,6 +39,7 @@ public class TicketService {
         }
     }
 
+    // выполняется в транзакции верхнего уровня (под релизом)
     public static void delTickets(OperaEntity opera) {
         for (int i = 1; i < 11; i++) {
             for (int j = 1; j < 11; j++){
@@ -45,7 +53,13 @@ public class TicketService {
         }
     }
 
-
+    @Transactional(
+            propagation = Propagation.REQUIRED,
+            isolation = Isolation.DEFAULT,
+            timeout = 2,
+            readOnly = false,
+            rollbackFor = {IOException.class, FileNotFoundException.class, EOFException.class}
+    )
     public static void saleTiket(OperaEntity opera, int nRow, int nPlace) {
        TicketEntity ticket = ticketRepository.findByOperaAndRowAndPlace( opera, nRow, nPlace);
         if (ticket == null) {
@@ -63,6 +77,13 @@ public class TicketService {
         }
     }
 
+    @Transactional(
+            propagation = Propagation.REQUIRED,
+            isolation = Isolation.DEFAULT,
+            timeout = 2,
+            readOnly = false,
+            rollbackFor = {IOException.class, FileNotFoundException.class, EOFException.class}
+    )
     public static void returnTiket(OperaEntity opera, int nRow, int nPlace) {
         TicketEntity ticket = ticketRepository.findByOperaAndRowAndPlace( opera, nRow, nPlace);
         if (ticket == null) {
